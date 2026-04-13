@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="WEBAPI_FinalWork.API/WEBAPI_FinalWork.API.csproj" />
+  <Project Path="WEBAPI_FinalWork.BLL/WEBAPI_FinalWork.BLL.csproj" />
+  <Project Path="WEBAPI_FinalWork.DAL/WEBAPI_FinalWork.DAL.csproj" />
+</Solution>
