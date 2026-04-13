@@ -20,5 +20,44 @@ namespace WEBAPI_FinalWork.API.Controllers
             var res = await _carService.GetAllAsync();
             return this.GetAction(res);
         }
+
+        [HttpGet("by-id")]
+        public async Task<IActionResult> GetById([FromQuery]int id)
+        {
+            var res = await _carService.GetByIdAsync(id);
+            return this.GetAction(res);
+        }
+        [HttpGet("by-name")]
+        public async Task<IActionResult> GetByName([FromQuery]string name)
+        {
+            var res = await _carService.GetByNameAsync(name);
+            return this.GetAction(res);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCar([FromForm] CreateCarDto dto)
+        {
+            var res = await _carService.CreateCarAsync(dto);
+            return this.GetAction(res);
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateCar([FromForm] UpdateCarDto dto)
+        {
+            var res = await _carService.UpdateCarAsync(dto);
+            return this.GetAction(res);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            var res = await _carService.DeleteByIdAsync(id);
+            return this.GetAction(res);
+        }
+        [HttpDelete("by-name")]
+        public async Task<IActionResult> DeleteByName([FromQuery] string name)
+        {
+            var res = await _carService.DeleteByName(name);
+            return this.GetAction(res);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,9 @@ namespace WEBAPI_FinalWork.DAL.Repositories
         {
             _context = context;
         }
-
+        public async Task<CarEntity?> GetByNameAsync(string name)
+        {
+            return await GetAll().FirstOrDefaultAsync(c => c.Name == name);
+        }
     }
 }
