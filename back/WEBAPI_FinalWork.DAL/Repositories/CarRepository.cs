@@ -15,9 +15,9 @@ namespace WEBAPI_FinalWork.DAL.Repositories
         {
             _context = context;
         }
-        public async Task<CarEntity?> GetByNameAsync(string name)
+        public async Task<List<CarEntity>?> GetByNameAsync(string name)
         {
-            return await GetAll().FirstOrDefaultAsync(c => c.Name == name);
+            return await GetAll().Where(c => c.Name == name).ToListAsync();
         }
     }
 }

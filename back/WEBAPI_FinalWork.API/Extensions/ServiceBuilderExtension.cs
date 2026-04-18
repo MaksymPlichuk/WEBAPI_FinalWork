@@ -8,11 +8,14 @@ namespace WEBAPI_FinalWork.API.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<CarService>();
+            services.AddScoped<ManufactureService>();
+            services.AddScoped<ImageService>();
             return services;
         }
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<CarRepository>();
+            services.AddScoped<ManufactureRepository>();
             return services;
         }
     }

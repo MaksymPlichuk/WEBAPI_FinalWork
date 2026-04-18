@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,10 @@ namespace WEBAPI_FinalWork.DAL.Repositories
     {
         public ManufactureRepository(AppDbContext context) : base(context)
         {
+        }
+        public async Task<ManufacturerEntity?> GetByNameAsync(string name)
+        {
+            return await GetAll().FirstOrDefaultAsync(m => m.Name == name);
         }
     }
 }

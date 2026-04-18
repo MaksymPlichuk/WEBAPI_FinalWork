@@ -21,4 +21,9 @@
     <ProjectReference Include="..\WEBAPI_FinalWork.DAL\WEBAPI_FinalWork.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Storage\Cars\" />
+    <Folder Include="Storage\Manufacturers\" />
+  </ItemGroup>
+
 </Project>

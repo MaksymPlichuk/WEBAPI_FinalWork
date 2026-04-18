@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WEBAPI_FinalWork.BLL.Dtos.Manufacture;
 using WEBAPI_FinalWork.DAL.Entities;
 
 namespace WEBAPI_FinalWork.BLL.Dtos.Car
@@ -16,6 +17,6 @@ namespace WEBAPI_FinalWork.BLL.Dtos.Car
         public int Price { get; set; } = 0;
         public string? Description { get; set; }
         public string? Image { get; set; }
-        public ManufacturerEntity? Manufacturer { get; set; }
+        public ManufactureForCarsDto? Manufacturer { get; set; }
     }
 }

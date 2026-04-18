@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WEBAPI_FinalWork.API.Extensions;
+using WEBAPI_FinalWork.API.Settings;
 using WEBAPI_FinalWork.BLL.Dtos.Car;
+using WEBAPI_FinalWork.BLL.Dtos.Pagination;
 using WEBAPI_FinalWork.BLL.Services;
 
 namespace WEBAPI_FinalWork.API.Controllers
@@ -10,14 +12,17 @@ namespace WEBAPI_FinalWork.API.Controllers
     public class CarController: ControllerBase
     {
         private readonly CarService _carService;
-        public CarController(CarService carService)
+        private readonly string _storagePath;
+        public CarController(CarService carService, IWebHostEnvironment env)
         {
             _carService = carService;
+            string root = env.ContentRootPath;
+            _storagePath = Path.Combine(root, StaticFilesSettings.Storage, StaticFilesSettings.CarDir);
         }
         [HttpGet]
-        public async Task<IActionResult> GetCars()
+        public async Task<IActionResult> GetCars([FromQuery]PaginationDto pagination)
         {
-            var res = await _carService.GetAllAsync();
+            var res = await _carService.GetAllAsync(pagination);
             return this.GetAction(res);
         }
 
@@ -37,26 +42,26 @@ namespace WEBAPI_FinalWork.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCar([FromForm] CreateCarDto dto)
         {
-            var res = await _carService.CreateCarAsync(dto);
+            var res = await _carService.CreateCarAsync(dto, _storagePath);
             return this.GetAction(res);
         }
         [HttpPut]
         public async Task<IActionResult> UpdateCar([FromForm] UpdateCarDto dto)
         {
-            var res = await _carService.UpdateCarAsync(dto);
+            var res = await _carService.UpdateCarAsync(dto, _storagePath);
             return this.GetAction(res);
         }
 
-        [HttpDelete]
+        [HttpDelete("by-id")]
         public async Task<IActionResult> DeleteById([FromQuery] int id)
         {
-            var res = await _carService.DeleteByIdAsync(id);
+            var res = await _carService.DeleteByIdAsync(id, _storagePath);
             return this.GetAction(res);
         }
         [HttpDelete("by-name")]
         public async Task<IActionResult> DeleteByName([FromQuery] string name)
         {
-            var res = await _carService.DeleteByName(name);
+            var res = await _carService.DeleteByName(name, _storagePath);
             return this.GetAction(res);
         }
     }

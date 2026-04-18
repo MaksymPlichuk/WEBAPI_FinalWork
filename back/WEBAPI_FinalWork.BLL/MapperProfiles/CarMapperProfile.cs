@@ -13,14 +13,15 @@ namespace WEBAPI_FinalWork.BLL.MapperProfiles
     {
         public CarMapperProfile()
         {
-            CreateMap<CarEntity, CarDto>()
-                .ForMember(dest=>dest.Image, opt=>opt.Ignore());
+            CreateMap<CarEntity, CarDto>();
+                //.ForMember(dest=>dest.Image, opt=>opt.MapFrom(src=>src.Image ?? src.Image.ToString()));
 
             CreateMap<CreateCarDto, CarEntity>()
                 .ForMember(dest=>dest.Image, opt=>opt.Ignore());
 
             CreateMap<UpdateCarDto, CarEntity>()
                 .ForMember(dest=>dest.Image, opt=>opt.Ignore());
+
         }
     }
 }

@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WEBAPI_FinalWork.BLL.Dtos.Car;
 using WEBAPI_FinalWork.DAL.Entities;
 
 namespace WEBAPI_FinalWork.BLL.Dtos.Manufacture
 {
-    public class ManufactureDto
+    public class ManufactureForCarsDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public int NumberOfWorkers { get; set; } = 0;
-        public DateTime FoundedDate { get; set; } = DateTime.UtcNow;
         public CountryEntity? Country { get; set; }
-        public List<CarDto> Cars { get; set; }
     }
 }
