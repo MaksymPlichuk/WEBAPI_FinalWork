@@ -12,7 +12,8 @@ import { object, string, number, date } from "yup";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import UploadImage from "../../components/uploadImage/UploadImage";
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: "flex",
@@ -60,24 +61,21 @@ const initValues = {
     year: 0,
     volume: 0,
     price: 0,
-    color: "",
-    desciption: "",
-    image: "",
-    manufactureId: 0
+    description: "",
+    manufacturerId: 0,
 };
 
 
 const CarUpdateForm = () => {
 
-
+    const [image, setImage] = useState(null);
     let curYear = new Date().getFullYear();
     const validationScheme = object({
         name: string().required("Обов'язкове поле").max(100, "Максимальна довжина 100 символів"),
         year: number().required("Обов'язкове поле").min(0, "Рік не може бути < 0").max(curYear, `Рік має бути не більше за ${curYear}`),
         volume: number().required("Обов'язкове поле").min(0, "Об'єм не може бути < 0"),
         price: number().required("Обов'язкове поле").min(0, "Ціна не може бути < 0"),
-        color: string().required("Обов'язкове поле").max(100, "Максимальна довжина 100 символів"),
-        desciption: string().required("Обов'язкове поле")
+        description: string().required("Обов'язкове поле")
     });
     const getError = (prop) => {
         return formik.touched[prop] && formik.errors[prop] ? (
@@ -94,10 +92,8 @@ const CarUpdateForm = () => {
             year: data.year || 0,
             volume: data.volume || 0,
             price: data.price || 0,
-            color: data.color || "",
-            desciption: data.desciption || "",
-            image: data.image || "",
-            manufactureId: data.manufactureId || 1
+            description: data.description || "",
+            manufacturerId: data.manufacturerId || 1
         });
     }
 
@@ -112,8 +108,21 @@ const CarUpdateForm = () => {
     const handleSubmit = async () => {
         try {
             console.log(formik.values);
-            
-            const resp = await axios.put(baseURL, formik.values);
+
+            const formData = new FormData();
+            formData.append("id", formik.values.id);
+            formData.append("name", formik.values.name);
+            formData.append("year", parseInt(formik.values.year));
+            formData.append("volume", parseFloat(String(formik.values.volume).replace(',', '.')));
+            formData.append("price", parseInt(formik.values.price));
+            formData.append("description", formik.values.description);
+            formData.append("manufacturerId", parseInt(formik.values.manufacturerId));
+
+            if (image) {
+                formData.append("image", image);
+            }
+
+            const resp = await axios.put(baseURL, formData);
             const { status } = resp
             console.log(resp);
 
@@ -140,12 +149,12 @@ const CarUpdateForm = () => {
 
     useEffect(() => {
         async function fetchCars() {
-            const resp = await axios.get(`${baseURL}/${id}`)
+            const resp = await axios.get(`${baseURL}/by-id?id=${id}`)
             const { data, status } = resp;
 
             if (status == 200) {
                 //console.warn(data);
-                setFormValues(data.data)
+                setFormValues(data.payload)
             } else {
                 navigate("/cars", { replace: true })
             }
@@ -237,52 +246,26 @@ const CarUpdateForm = () => {
                             />
                             {getError("price")}
                         </FormControl>
+
                         <FormControl>
-                            <FormLabel htmlFor="color">Колір</FormLabel>
+                            <FormLabel htmlFor="description">Опис</FormLabel>
                             <TextField
-                                name="color"
-                                placeholder="Black"
-                                autoComplete="color"
-                                fullWidth
-                                type="text"
-                                variant="outlined"
-                                value={formik.values.color}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                            {getError("color")}
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="desciption">Опис</FormLabel>
-                            <TextField
-                                name="desciption"
+                                name="description"
                                 placeholder="Опис..."
-                                autoComplete="desciption"
+                                autoComplete="description"
                                 fullWidth
                                 type="text"
                                 variant="outlined"
-                                value={formik.values.desciption}
+                                value={formik.values.description}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                             />
-                            {getError("desciption")}
+                            {getError("description")}
                         </FormControl>
 
 
-                        <FormControl>
-                            <FormLabel htmlFor="image">Фото</FormLabel>
-                            <TextField
-                                name="image"
-                                placeholder="Посилання на фото"
-                                autoComplete="image"
-                                fullWidth
-                                type="text"
-                                variant="outlined"
-                                value={formik.values.image}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                        </FormControl>
+                        <UploadImage label="Фото автора" onChange={(i) => setImage(i)}
+                            buttonText="Обрати файл зображення" />
 
                         <Button
                             type="submit"

@@ -16,12 +16,13 @@ import { useDispatch } from 'react-redux';
 
 const CarCard = ({ car }) => {
     const baseURL = import.meta.env.VITE_CARS_URL;
+    const baseImgUrl = import.meta.env.VITE_CARS_IMG_URL;
     const dispatch = useDispatch();
     const [isFavorite, setIsFavorite] = useState(car.isFavorite);//bool is favorite
 
     const removeCarHandle = async () => {
         try {
-            await axios.delete(`${baseURL}/by-id${car.id}`);
+            await axios.delete(`${baseURL}/by-id?id=${car.id}`);
             dispatch({ type: "deleteCar", payload: car.id })
         } catch (error) {
             console.warn(error);
@@ -49,15 +50,18 @@ const CarCard = ({ car }) => {
                     component="img"
                     maxheight="350"
                     image={
-                        car.image ? car.image : "https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg"
+                        car.image ? baseImgUrl+car.image
+                            : "https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg"
                     }
                     alt={car.name}
                 />
             </Link>
             <CardContent>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {car.price}$
-                    <span style={{ margin: 10 }}>{car.year}</span>
+                    {car.price}$ ({car.uahPrice}₴)
+                </Typography>
+                <Typography variant="body2">
+                    <span>{car.year}</span>
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     <span >Volume: {car.volume}L</span>

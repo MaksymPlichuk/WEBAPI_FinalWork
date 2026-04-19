@@ -18,20 +18,30 @@ namespace WEBAPI_FinalWork.BLL.Services
         private readonly CarRepository _carRepository;
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
-        public CarService(CarRepository carRepository, IMapper mapper, ImageService imageService) : base(mapper)
+        private readonly CurrencyUpdateService _currencyService;
+        public CarService(CarRepository carRepository, IMapper mapper, ImageService imageService, CurrencyUpdateService currencyService)
+            : base(mapper)
         {
             _carRepository = carRepository;
             _mapper = mapper;
             _imageService = imageService;
+            _currencyService = currencyService;
         }
         public async Task<ServiceResponse> GetAllAsync(PaginationDto pagination)
         {
-            var entities = _carRepository.GetAll().Include(c=>c.Manufacturer);
+            var entities = _carRepository.GetAll().Include(c => c.Manufacturer);
             if (entities == null)
             {
                 return ServiceResponse.Error("Невдалося знайти авто");
             }
             var resp = await GetPaginationAsync<CarEntity, CarDto>(entities, pagination);
+
+            float rate = _currencyService.GetCurrentRate();
+            foreach (var dto in resp.Data)
+            {
+                dto.UAHPrice = dto.Price * rate;
+            }
+
             return ServiceResponse.Success($"Успішно знайдено {entities.Count()} машин", resp);
         }
         public async Task<ServiceResponse> GetByIdAsync(int id)
@@ -45,7 +55,11 @@ namespace WEBAPI_FinalWork.BLL.Services
             var manuf = _carRepository.GetAll().Where(c => c.Id == entity.Id).Include(c => c.Manufacturer).ToList();
             entity.Manufacturer = manuf.First().Manufacturer;
 
-            return ServiceResponse.Success($"Авто з Id '{id}' успішно знайдено", _mapper.Map<CarDto>(entity));
+            float rate = _currencyService.GetCurrentRate();
+            var dto = _mapper.Map<CarDto>(entity);
+            dto.UAHPrice = dto.Price * rate;
+
+            return ServiceResponse.Success($"Авто з Id '{id}' успішно знайдено", dto);
         }
         public async Task<ServiceResponse> GetByNameAsync(string name)
         {
@@ -54,7 +68,15 @@ namespace WEBAPI_FinalWork.BLL.Services
             {
                 return ServiceResponse.Error($"Авто з назвою '{name}' не існує");
             }
-            return ServiceResponse.Success($"Авто з назвою '{name}' успішно знайдено", _mapper.Map<List<CarDto>>(entities));
+
+            float rate = _currencyService.GetCurrentRate();
+            var dtos = _mapper.Map<List<CarDto>>(entities);
+            foreach (var dto in dtos)
+            {
+                dto.UAHPrice = dto.Price * rate;
+            }
+
+            return ServiceResponse.Success($"Авто з назвою '{name}' успішно знайдено", dtos);
         }
 
 
@@ -74,7 +96,12 @@ namespace WEBAPI_FinalWork.BLL.Services
             {
                 return ServiceResponse.Error("Невдалося Створити");
             }
-            return ServiceResponse.Success($"Авто '{dto.Name}' успішно створено!", _mapper.Map<CarDto>(entity));
+
+            float rate = _currencyService.GetCurrentRate();
+            var respDto = _mapper.Map<CarDto>(entity);
+            respDto.UAHPrice = respDto.Price * rate;
+
+            return ServiceResponse.Success($"Авто '{dto.Name}' успішно створено!", respDto);
         }
 
         public async Task<ServiceResponse> UpdateCarAsync(UpdateCarDto dto, string storagePath)
@@ -82,13 +109,13 @@ namespace WEBAPI_FinalWork.BLL.Services
             var entity = await _carRepository.GetByIdAsync(dto.Id);
             if (entity == null) return ServiceResponse.Error($"Авто з Id '{dto.Id}' не існує");
 
-            var updatedEntity = _mapper.Map(dto, entity);
+            entity = _mapper.Map(dto, entity);
 
             if (dto.Image != null)
             {
                 if (entity.Image != null)
                 {
-                    if (!string.IsNullOrEmpty(updatedEntity.Image))
+                    if (!string.IsNullOrEmpty(entity.Image))
                     {
                         var resp = _imageService.DeleteImage(Path.Combine(storagePath, entity.Image));
                         if (!resp.IsSuccess) { return resp; }
@@ -96,15 +123,20 @@ namespace WEBAPI_FinalWork.BLL.Services
                 }
                 var imgResp = await _imageService.SaveImageAsync(dto.Image, storagePath);
                 if (!imgResp.IsSuccess) { return imgResp; }
-                updatedEntity.Image = imgResp.Payload.ToString();
+                entity.Image = imgResp.Payload.ToString();
             }
 
-            var res = await _carRepository.UpdateAsync(updatedEntity);
+            var res = await _carRepository.UpdateAsync(entity);
             if (!res)
             {
                 return ServiceResponse.Error("Невдалося Оновити");
             }
-            return ServiceResponse.Success($"Авто '{dto.Name}' успішно оновлено!", _mapper.Map<CarDto>(updatedEntity));
+
+            float rate = _currencyService.GetCurrentRate();
+            var respDto = _mapper.Map<CarDto>(entity);
+            respDto.UAHPrice = respDto.Price * rate;
+
+            return ServiceResponse.Success($"Авто '{dto.Name}' успішно оновлено!", respDto);
         }
 
 
@@ -114,7 +146,7 @@ namespace WEBAPI_FinalWork.BLL.Services
             if (entity == null) return ServiceResponse.Error($"Авто з Id '{id}' не існує");
 
 
-            if (entity.Image!=null && !string.IsNullOrEmpty(entity.Image))
+            if (entity.Image != null && !string.IsNullOrEmpty(entity.Image))
             {
                 var resp = _imageService.DeleteImage(Path.Combine(storagePath, entity.Image));
                 if (!resp.IsSuccess) { return resp; }
@@ -123,6 +155,11 @@ namespace WEBAPI_FinalWork.BLL.Services
 
             bool res = await _carRepository.DeleteAsync(entity);
             if (!res) return ServiceResponse.Error("Невдалося Видалити");
+
+
+            float rate = _currencyService.GetCurrentRate();
+            var respDto = _mapper.Map<CarDto>(entity);
+            respDto.UAHPrice = respDto.Price * rate;
 
             return ServiceResponse.Success($"Авто {entity.Name} {entity.Year} року успішно видалено!", _mapper.Map<CarDto>(entity));
         }
@@ -143,7 +180,11 @@ namespace WEBAPI_FinalWork.BLL.Services
             bool res = await _carRepository.DeleteAsync(car);
             if (!res) return ServiceResponse.Error("Невдалося Видалити");
 
-            return ServiceResponse.Success($"Авто '{car.Name}' {car.Year} року успішно видалено!", _mapper.Map<CarDto>(car));
+            float rate = _currencyService.GetCurrentRate();
+            var respDto = _mapper.Map<CarDto>(car);
+            respDto.UAHPrice = respDto.Price * rate;
+
+            return ServiceResponse.Success($"Авто '{car.Name}' {car.Year} року успішно видалено!", respDto);
         }
     }
 }

@@ -5,6 +5,7 @@ import axios from "axios";
 
 const CarDescription = () => {
 
+    const baseImgUrl = import.meta.env.VITE_CARS_IMG_URL;
     const navigate = useNavigate();
     const { id } = useParams();
     const [car, setCar] = useState(null);
@@ -24,7 +25,8 @@ const CarDescription = () => {
                 price: data.payload.price || 0,
                 description: data.payload.description || "",
                 image: data.payload.image || "",
-                manufactureName: data.payload.manufacturer?.name || 1
+                manufactureName: data.payload.manufacturer?.name || 1,
+                uahPrice: data.payload.uahPrice || 1,
             }
             setCar(formated);
         }
@@ -43,7 +45,7 @@ const CarDescription = () => {
     return (
         <Box sx={{ display: "flex", mt: "10%", alignItems: "center" }}>
             <Box sx={{ flexGrow: .5 }}>
-                <img style={{ height: 650, width: 650, objectFit: "contain" }} src={car.image} alt={car.name} />
+                <img style={{ maxHeight: 650, maxWidth: 650, objectFit: "contain" }} src={baseImgUrl + car.image} alt={car.name} />
             </Box>
 
             <Stack sx={{ flexDirection: 'column', alignSelf: 'center', gap: 4, maxWidth: 450 }} >
@@ -60,6 +62,7 @@ const CarDescription = () => {
                         <Typography variant="h5" sx={{ color: 'text.secondary', mt: "20%" }}> Year: {car.year} </Typography>
                         <Typography variant="h5" sx={{ color: 'text.secondary' }}> Volume: {car.volume} </Typography>
                         <Typography variant="h5" sx={{ color: 'text.secondary' }}> Price: $ {car.price} </Typography>
+                        <Typography variant="h5" sx={{ color: 'text.secondary' }}> ({car.uahPrice}₴) </Typography>
 
                     </div>
                 </Stack>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEBAPI_FinalWork.BLL.Dtos.Car;
+using WEBAPI_FinalWork.BLL.Services;
 using WEBAPI_FinalWork.DAL.Entities;
 
 namespace WEBAPI_FinalWork.BLL.MapperProfiles
@@ -14,7 +15,6 @@ namespace WEBAPI_FinalWork.BLL.MapperProfiles
         public CarMapperProfile()
         {
             CreateMap<CarEntity, CarDto>();
-                //.ForMember(dest=>dest.Image, opt=>opt.MapFrom(src=>src.Image ?? src.Image.ToString()));
 
             CreateMap<CreateCarDto, CarEntity>()
                 .ForMember(dest=>dest.Image, opt=>opt.Ignore());

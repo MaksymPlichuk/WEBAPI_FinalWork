@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using Serilog;
+using System.Globalization;
 using WEBAPI_FinalWork.API.Extensions;
+using WEBAPI_FinalWork.API.Jobs;
 using WEBAPI_FinalWork.API.Middlewares;
+using WEBAPI_FinalWork.BLL.Services;
 using WEBAPI_FinalWork.DAL;
 using WEBAPI_FinalWork.DAL.Initilizer;
 
@@ -20,6 +25,9 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddServices().AddRepositories();
+
+builder.Services.AddHttpClient<CurrencyUpdateService>();
+builder.Services.AddSingleton<CurrencyUpdateService>();
 
 string corsPolicy = "AllowAllCFG";
 builder.Services.AddCors(opt =>
@@ -44,6 +52,19 @@ Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("UpdateCurrencyJob");
+    q.AddJob<UpdateCurrencyJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("UpdateCurrencyJob-trigger")
+        .WithCronSchedule("0 0 * * * ?")
+        );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,6 +81,16 @@ app.UseStaticFiles(builder.Environment);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//щоб Volume проходив валідацію з фронта
+var supportedCultures = new[] { new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+//
 
 app.MapControllers();
 app.Seed().Wait();

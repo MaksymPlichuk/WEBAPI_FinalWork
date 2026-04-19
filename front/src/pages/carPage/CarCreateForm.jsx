@@ -12,6 +12,8 @@ import { object, string, number, date } from "yup";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { useDispatch } from "react-redux";
+import { useRef, useState } from "react";
+import UploadImage from "../../components/uploadImage/UploadImage";
 
 
 
@@ -61,33 +63,57 @@ const initValues = {
     year: 0,
     volume: 0,
     price: 0,
-    color: "",
-    desciption: "",
-    image: "",
-    manufactureId: 0
+    description: "",
+    manufacturerId: 0
 };
 
 const baseURL = import.meta.env.VITE_CARS_URL;
 
 const CarCreateForm = () => {
 
+    const [image, setImage] = useState(null);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleSubmit = async (newCar) => {
-        console.log(newCar);
 
+        const formData = new FormData();
+        formData.append("name", newCar.name);
+        formData.append("year", parseInt(newCar.year));
+        formData.append("volume", parseFloat(newCar.volume).toString().replace(',', '.'));
+        formData.append("price", parseInt(newCar.price));
+        formData.append("description", newCar.description);
+        formData.append("manufacturerId", newCar.manufacturerId);
+
+        if (image) {
+            formData.append("image", image);
+        }
+        console.log(formData);
         try {
-            const resp = await axios.post(baseURL, newCar);
+            const resp = await axios.post(baseURL, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             if (resp.status == 200) {
                 console.log("car Added");
-                dispatch({ type: "createCar", payload: newCar })
+                dispatch({
+                    type: "createCar", payload: {
+                        name: newCar.name,
+                        year: newCar.year,
+                        volume: newCar.volume,
+                        price: newCar.price,
+                        description: newCar.description,
+                        manufacturerId: newCar.manufacturerId
+                    }
+                })
                 navigate("/cars")
             }
         } catch (error) {
             console.warn(error);
         }
-        console.log(curYear);
+
     }
 
     const getError = (prop) => {
@@ -104,8 +130,7 @@ const CarCreateForm = () => {
         year: number().required("Обов'язкове поле").min(0, "Рік не може бути < 0").max(curYear, `Рік має бути не більше за ${curYear}`),
         volume: number().required("Обов'язкове поле").min(0, "Об'єм не може бути < 0"),
         price: number().required("Обов'язкове поле").min(0, "Ціна не може бути < 0"),
-        color: string().required("Обов'язкове поле").max(100, "Максимальна довжина 100 символів"),
-        desciption: string().required("Обов'язкове поле")
+        description: string().required("Обов'язкове поле")
     });
 
     const formik = useFormik({
@@ -198,42 +223,28 @@ const CarCreateForm = () => {
                             />
                             {getError("price")}
                         </FormControl>
+
                         <FormControl>
-                            <FormLabel htmlFor="color">Колір</FormLabel>
+                            <FormLabel htmlFor="description">Опис</FormLabel>
                             <TextField
-                                name="color"
-                                placeholder="Black"
-                                autoComplete="color"
-                                fullWidth
-                                type="text"
-                                variant="outlined"
-                                value={formik.values.color}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                            {getError("color")}
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="desciption">Опис</FormLabel>
-                            <TextField
-                                name="desciption"
+                                name="description"
                                 placeholder="Опис..."
-                                autoComplete="desciption"
+                                autoComplete="description"
                                 fullWidth
                                 type="text"
                                 variant="outlined"
-                                value={formik.values.desciption}
+                                value={formik.values.description}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                             />
-                            {getError("desciption")}
+                            {getError("description")}
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="manufactureId">ID Виробника</FormLabel>
+                            <FormLabel htmlFor="manufacturerId">ID Виробника</FormLabel>
                             <TextField
-                                name="manufactureId"
+                                name="manufacturerId"
                                 placeholder="1"
-                                autoComplete="manufactureId"
+                                autoComplete="manufacturerId"
                                 fullWidth
                                 type="number"
                                 inputProps={{
@@ -242,26 +253,14 @@ const CarCreateForm = () => {
                                 }}
 
                                 variant="outlined"
-                                value={formik.values.manufactureId}
+                                value={formik.values.manufacturerId}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                             />
 
                         </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="image">Фото</FormLabel>
-                            <TextField
-                                name="image"
-                                placeholder="Посилання на фото"
-                                autoComplete="image"
-                                fullWidth
-                                type="text"
-                                variant="outlined"
-                                value={formik.values.image}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                        </FormControl>
+                        <UploadImage label="Фото автора" onChange={(i) => setImage(i)}
+                            buttonText="Обрати файл зображення" />
 
                         <Button
                             type="submit"

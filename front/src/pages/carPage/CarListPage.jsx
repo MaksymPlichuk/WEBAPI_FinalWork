@@ -122,7 +122,7 @@ const CarListPage = () => {
         <Box
             sx={{ display: "flex", alignItems: "center", flexDirection: "column", }}>
 
-            <Box sx={{ flexGrow: .5, mx: 5, mt: 5 }}>
+            {/* <Box sx={{ flexGrow: .5, mx: 5, mt: 5 }}>
                 <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -145,7 +145,7 @@ const CarListPage = () => {
                         </Box>
                     </AccordionDetails>
                 </Accordion>
-            </Box>
+            </Box> */}
 
 
             <Grid container spacing={2} mx="100px" my="50px">

@@ -18,5 +18,6 @@ namespace WEBAPI_FinalWork.BLL.Dtos.Car
         public string? Description { get; set; }
         public string? Image { get; set; }
         public ManufactureForCarsDto? Manufacturer { get; set; }
+        public float UAHPrice { get; set; } = 0;
     }
 }

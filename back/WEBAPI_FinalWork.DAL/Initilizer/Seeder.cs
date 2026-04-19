@@ -54,7 +54,7 @@ namespace WEBAPI_FinalWork.DAL.Initilizer
                         Volume = 6.0f,
                         Price = 25000,
                         Description = "The legendary '600 Sel' - a symbol of engineering excellence and luxury.",
-                        Image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6qfd6rRGVGiJQFGg0DrJmplZugCbenfDKEw&s",
+                        Image = "MercedesW140.jpg",
                         Manufacturer = new ManufacturerEntity()
                         {
                             Name = "Mercedes-Benz",
@@ -71,7 +71,7 @@ namespace WEBAPI_FinalWork.DAL.Initilizer
                         Volume = 7.0f,
                         Price = 280000,
                         Description = "A high-performance variant of the Ford Mustang, a true American muscle car icon.",
-                        Image = "https://media.fastestlaps.com/ford-mustang-boss-429-1970.jpg",
+                        Image = "FordMustangBoss429.jpg",
                         Manufacturer = new ManufacturerEntity()
                         {
                             Name = "Ford Motor Company",
@@ -88,7 +88,7 @@ namespace WEBAPI_FinalWork.DAL.Initilizer
                         Volume = 4.0f,
                         Price = 240000,
                         Description = "The definitive grand tourer, combining phenomenal performance with exquisite craftsmanship.",
-                        Image = "https://cdn.motor1.com/images/mgl/P33v6X/s1/2023-bentley-continental-gt-s.jpg",
+                        Image = "BentleyContinentalGT2023.jpg",
                         Manufacturer = new ManufacturerEntity()
                         {
                             Name = "Bentley Motors",
