@@ -12,18 +12,19 @@ const CarDescription = () => {
     const baseURL = import.meta.env.VITE_CARS_URL;
     async function fetchCar() {
 
-        const resp = await axios.get(`${baseURL}/${id}`)
+        const resp = await axios.get(`${baseURL}/by-id?id=${id}`)
+        console.log(resp);
+
         const { data, status } = resp;
         if (status == 200) {
             const formated = {
-                name: data.data.name || "",
-                year: data.data.year || 0,
-                volume: data.data.volume || 0,
-                price: data.data.price || 0,
-                color: data.data.color || "",
-                desciption: data.data.desciption || "",
-                image: data.data.image || "",
-                manufactureName: data.data.manufacture?.name || 1
+                name: data.payload.name || "",
+                year: data.payload.year || 0,
+                volume: data.payload.volume || 0,
+                price: data.payload.price || 0,
+                description: data.payload.description || "",
+                image: data.payload.image || "",
+                manufactureName: data.payload.manufacturer?.name || 1
             }
             setCar(formated);
         }
@@ -31,7 +32,7 @@ const CarDescription = () => {
     }
 
 
-    useEffect(() => { fetchCar() })
+    useEffect(() => { fetchCar() }, [])
 
     if (!car) {
         return (
@@ -42,7 +43,7 @@ const CarDescription = () => {
     return (
         <Box sx={{ display: "flex", mt: "10%", alignItems: "center" }}>
             <Box sx={{ flexGrow: .5 }}>
-                <img style={{ maxHeight: 650, maxWidth: 650 }} src={car.image} alt={car.name} />
+                <img style={{ height: 650, width: 650, objectFit: "contain" }} src={car.image} alt={car.name} />
             </Box>
 
             <Stack sx={{ flexDirection: 'column', alignSelf: 'center', gap: 4, maxWidth: 450 }} >
@@ -54,11 +55,11 @@ const CarDescription = () => {
                         <Typography variant="h4" sx={{ color: 'text.secondary' }}>
                             {car.manufactureName}
                         </Typography>
+                        <Typography variant="h7" sx={{ color: 'text.secondary', mt: "10%" }}> {car.description} </Typography>
+
                         <Typography variant="h5" sx={{ color: 'text.secondary', mt: "20%" }}> Year: {car.year} </Typography>
                         <Typography variant="h5" sx={{ color: 'text.secondary' }}> Volume: {car.volume} </Typography>
                         <Typography variant="h5" sx={{ color: 'text.secondary' }}> Price: $ {car.price} </Typography>
-                        <Typography variant="h5" sx={{ color: 'text.secondary' }}> Color: {car.color} </Typography>
-                        <Typography variant="h7" sx={{ color: 'text.secondary', mt: "10%" }}> {car.desciption} </Typography>
 
                     </div>
                 </Stack>

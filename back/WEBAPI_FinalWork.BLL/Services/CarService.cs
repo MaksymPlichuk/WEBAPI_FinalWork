@@ -36,11 +36,15 @@ namespace WEBAPI_FinalWork.BLL.Services
         }
         public async Task<ServiceResponse> GetByIdAsync(int id)
         {
-            var entity = _carRepository.GetByIdAsync(id);
+            var entity = await _carRepository.GetByIdAsync(id);
             if (entity == null)
             {
                 return ServiceResponse.Error($"Авто з Id '{id}' не існує");
             }
+
+            var manuf = _carRepository.GetAll().Where(c => c.Id == entity.Id).Include(c => c.Manufacturer).ToList();
+            entity.Manufacturer = manuf.First().Manufacturer;
+
             return ServiceResponse.Success($"Авто з Id '{id}' успішно знайдено", _mapper.Map<CarDto>(entity));
         }
         public async Task<ServiceResponse> GetByNameAsync(string name)

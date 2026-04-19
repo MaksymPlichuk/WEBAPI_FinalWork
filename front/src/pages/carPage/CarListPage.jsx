@@ -41,17 +41,17 @@ const CarListPage = () => {
     async function fetchCars() {
         const response = await axios.get(baseURL, {
             params: {
-                page_size: 20,
-                page: 5
+                pageSize: 20,
+                page: 1
             }
         });  //?page_size=20&page=5
-
+        console.log(response)
         const { data, status } = response;
         if (status == 200) {
             console.log(data);
 
             const newCars = []
-            for (const car of data.data.items) {
+            for (const car of data.payload.data) {
                 newCars.push(car)
             }
             dispatch({ type: "loadCars", payload: newCars });
@@ -67,7 +67,7 @@ const CarListPage = () => {
         );
     }
 
-    async function onSubmitFiltersHandle(event) {
+    async function onSubmitFiltersHandle(event) {//filter todo
         event.preventDefault();
         console.log(filters);
 
@@ -75,11 +75,12 @@ const CarListPage = () => {
 
         const responseHandle = async (response) => {
             //console.log(urlFilter);
-            
+
             const { data, status } = response;
             if (status == 200) {
+
                 const newCars = []
-                for (const car of data.data.items) {
+                for (const car of data.payload.data) {
                     newCars.push(car)
                 }
                 dispatch({ type: "loadCars", payload: newCars });

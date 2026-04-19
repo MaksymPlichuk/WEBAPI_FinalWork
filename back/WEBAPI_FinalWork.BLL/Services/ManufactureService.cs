@@ -34,7 +34,7 @@ namespace WEBAPI_FinalWork.BLL.Services
         }
         public async Task<ServiceResponse> GetByIdAsync(int id)
         {
-            var entity = _manufactureRepository.GetByIdAsync(id);
+            var entity = await _manufactureRepository.GetByIdAsync(id);
             if (entity == null)
             {
                 return ServiceResponse.Error($"Виробник з Id {id} не існує");
@@ -43,7 +43,7 @@ namespace WEBAPI_FinalWork.BLL.Services
         }
         public async Task<ServiceResponse> GetByNameAsync(string name)
         {
-            var entity = _manufactureRepository.GetByNameAsync(name);
+            var entity = await _manufactureRepository.GetByNameAsync(name);
             if (entity == null)
             {
                 return ServiceResponse.Error($"Виробник з назвою {name} не існує");

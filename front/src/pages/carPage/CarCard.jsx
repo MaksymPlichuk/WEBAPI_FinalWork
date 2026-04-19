@@ -17,11 +17,11 @@ import { useDispatch } from 'react-redux';
 const CarCard = ({ car }) => {
     const baseURL = import.meta.env.VITE_CARS_URL;
     const dispatch = useDispatch();
-    const [isFavorite, setIsFavorite] = useState(car.isFavorite);
+    const [isFavorite, setIsFavorite] = useState(car.isFavorite);//bool is favorite
 
     const removeCarHandle = async () => {
         try {
-            await axios.delete(`${baseURL}/${car.id}`);
+            await axios.delete(`${baseURL}/by-id${car.id}`);
             dispatch({ type: "deleteCar", payload: car.id })
         } catch (error) {
             console.warn(error);
@@ -47,7 +47,7 @@ const CarCard = ({ car }) => {
                 <CardMedia
                     sx={{ objectFit: "contain" }}
                     component="img"
-                    height="350"
+                    maxheight="350"
                     image={
                         car.image ? car.image : "https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg"
                     }
@@ -61,7 +61,9 @@ const CarCard = ({ car }) => {
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     <span >Volume: {car.volume}L</span>
-                    <span style={{ margin: 10 }}>{car.manufacture?.name}</span>
+                </Typography>
+                <Typography>
+                    <span>{car.manufacturer?.name}</span>
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>

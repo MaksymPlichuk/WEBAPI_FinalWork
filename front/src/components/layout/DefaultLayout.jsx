@@ -8,7 +8,7 @@ const DefaultLayout = () => {
     return (
         <>
             <Navbar />
-            <Container sx={{ minHeight: "100vh" }}>
+            <Container sx={{ minHeight: "100vh", mb:"5em" }}>
                 <Outlet></Outlet>
             </Container>
             <Footer />
