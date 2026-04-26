@@ -16,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     string? connectionString = builder.Configuration.GetConnectionString("LocalDB");
-    opt.UseNpgsql(connectionString);
+    string? connectionDockerString = builder.Configuration.GetConnectionString("DockerDB");
+    opt.UseNpgsql(connectionDockerString);
 });
 
 builder.Services.AddControllers();
@@ -68,7 +69,8 @@ builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+string? enableSwagger = builder.Configuration["EnableSwagger"];
+if (enableSwagger != null && enableSwagger == "true")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
