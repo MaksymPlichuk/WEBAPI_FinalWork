@@ -15,13 +15,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import { env } from "../../env";
 
 
 const CarListPage = () => {
 
     const { cars, isLoaded } = useSelector(state => state.car);
     const dispatch = useDispatch();
-    const baseURL = import.meta.env.VITE_CARS_URL;
+    const baseURL = env.carsUrl;
 
     const [filters, setFilters] = useState({
         year: "",

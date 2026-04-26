@@ -14,6 +14,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useRef, useState } from "react";
 import UploadImage from "../../components/uploadImage/UploadImage";
+import { env } from "../../env";
 
 
 
@@ -67,7 +68,7 @@ const initValues = {
     manufacturerId: 0
 };
 
-const baseURL = import.meta.env.VITE_CARS_URL;
+const baseURL = env.carsUrl;
 
 const CarCreateForm = () => {
 

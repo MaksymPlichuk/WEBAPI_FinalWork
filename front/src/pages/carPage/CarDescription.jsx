@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Box, Stack, Typography, Rating } from "@mui/material";
 import axios from "axios";
+import { env } from "../../env";
 
 const CarDescription = () => {
 
-    const baseImgUrl = import.meta.env.VITE_CARS_IMG_URL;
+    const baseImgUrl = env.carsImgUrl;
+    const baseURL = env.carsUrl;
+
     const navigate = useNavigate();
     const { id } = useParams();
     const [car, setCar] = useState(null);
 
-    const baseURL = import.meta.env.VITE_CARS_URL;
     async function fetchCar() {
 
         const resp = await axios.get(`${baseURL}/by-id?id=${id}`)

@@ -13,10 +13,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { Box } from '@mui/material'
 import { useDispatch } from 'react-redux';
+import { env } from '../../env';
 
 const CarCard = ({ car }) => {
-    const baseURL = import.meta.env.VITE_CARS_URL;
-    const baseImgUrl = import.meta.env.VITE_CARS_IMG_URL;
+    const baseURL = env.carsUrl;
+    const baseImgUrl = env.carsImgUrl;
     const dispatch = useDispatch();
     const [isFavorite, setIsFavorite] = useState(car.isFavorite);//bool is favorite
 
