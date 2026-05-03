@@ -1,0 +1,546 @@
+---------------------------------------------- 	
+	
+	
+ /$$$$$$$   /$$$$$$   /$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$ 
+| $$__  $$ /$$__  $$ /$$__  $$| $$  /$$/| $$_____/| $$__  $$
+| $$  \ $$| $$  \ $$| $$  \__/| $$ /$$/ | $$      | $$  \ $$
+| $$  | $$| $$  | $$| $$      | $$$$$/  | $$$$$   | $$$$$$$/
+| $$  | $$| $$  | $$| $$      | $$  $$  | $$__/   | $$__  $$
+| $$  | $$| $$  | $$| $$    $$| $$\  $$ | $$      | $$  \ $$
+| $$$$$$$/|  $$$$$$/|  $$$$$$/| $$ \  $$| $$$$$$$$| $$  | $$
+|_______/  \______/  \______/ |__/  \__/|________/|__/  |__/
+                                                            
+                                                            
+---------------------------------------------- 	
+01_Docker Intro
+ 
+									незнають один про одного
+Інструмент для хостнга в контейнерах (віртуальне середовище)	
+	
+	
+Container -- всі необіхдні пакети для запуску програми
+			готова програма | Ізольоване середовище запускається від Image
+	
+Image	--	інструкція які пакети скачати куди перенести
+		  все для запуску програми в контейнері
+передається між сереверами для Deploy на багатьох серверів	| шаблон для створення контейнера
+	
+	архітектура
+ARM64	--	мобільні процесори	
+AMD64	--	на пк
+	
+wsl -l -o	--	Список систем які можна встановити
+wsl -l -v	--	Список встановлених систем
+
+wsl --unregister Ubuntu	--	Видалити систему з назвою Ubuntu
+wsl --install Ubuntu	--	Встановити систем з назвою Ubuntu
+	
+wsl --shutdown	--вимикаємо щоб не було конфлікту Ubuntu і Docker	
+	
+/Ubuntu
+	sudo apt update		--	sudo від імені адміна	
+	sudo su		--	super admin	
+	
+cd		-- перейти в директорію
+ls		-- список елементів в папці
+mkdir	--	створитит папку
+	
+apt install mc	--	скачає Midnight comander
+	
+---------------------------------------------- 	
+02_
+
+192.168.1 .1	-- адреса пешого пристрою локальної мережі
+
+port --	адреса програми	 поштова скринька
+ip	 --	адреса пристрою  під'їзд
+
+внутрішній порт	-- викор в контейнері	
+ з image (всі однакові в контейнерах)	80
+
+зовнішній -- УНІКАЛЬНИЙ для доступу зовні	81
+localhost://81:80
+
+	Під'єднуємося по зовнішному localhost://81
+		Але запуститься вона на внутрішньому 80
+	
+			назва Image
+docker pull postgres	-- завантажити image
+	username/imagename:latest
+В офіційних: imagename:latest
+
+:latest	--	тег який є необов'яхковим є у всіх по дефолту
+
+# Образи
+docker images - переглянути список всіх завантажених Docker-образів.
+docker pull <image_name> - завантажити образ з Docker Hub або іншого реєстру.
+docker rmi <image_id_or_name> - видалити вказаний образ.
+docker rmi -f <image_id_or_name> - примусово видалити образ, навіть якщо він використовується контейнером.
+docker image prune - видалити всі "висячі" (dangling) образи, які не мають тегів.
+docker tag <image_id> <new_image_name>:<new_tag> - додати новий тег до існуючого образу.
+docker history <image> - переглянути історію шарів образу.
+docker inspect <image> - переглянути детальну інформацію про образ.
+
+# Контейнери
+docker ps - переглянути список запущених контейнерів.
+docker ps -a - переглянути список усіх контейнерів (як запущених, так і зупинених).
+docker run <options> <image_name> - запустити новий контейнер з вказаним образом.
+docker start <container_id_or_name> - запустити зупинений контейнер.
+docker stop <container_id_or_name> - зупинити запущений контейнер.
+docker rm <container_id_or_name> - видалити зупинений контейнер.
+docker rm -f <container_id_or_name> - примусово видалити працюючий контейнер.
+docker container prune - видалити всі зупинені контейнери.
+docker logs <container_id_or_name> - перегляд журналу виведення контейнера.
+
+# Options
+-d 	 (для БД і image які діють на фоні)	- Запускає контейнер у фоновому режимі (detached mode)
+-it 				- Інтерактивний режим з доступом до терміналу (-i + -t)
+--name <name> 		- Присвоює ім’я контейнеру
+--rm				- Видаляє контейнер після його завершення
+-p HOST:CONTAINER	- Проброс порту (наприклад: -p 8080:80)
+
+-v host:container	- Примонтований том (volume)
+--network name		- Підключення до конкретної Docker-мережі
+--restart always	- Автоматичний перезапуск контейнера (ще варіанти: no, on-failure, unless-stopped)
+	
+-e VARIABLE=value		- Встановлює змінну оточення
+		Можна змінювати значення у файнлах (appsettings.json)
+	
+docker run -d --name db -p 5555:5432 -e POSTGRES_PASSWORD=123456 -e POSTGRES_USER=pd411 
+	-e POSTGRES_DB=docker_database postgres
+								назва Image
+								
+---------------------------------------------- 	
+03_	DockerNetwork							
+
+Створ ConsoleApp і в ньому пропис Postgre БД
+ нажимаємо
+	Add container support	 -- стоврить Docker File
+
+переносмо проект у папку з Ubuntu -- щоб зробити Build
+
+		створ Image з нашим ConsoleApp
+docker build -t pd411_network . (. -- шукати тут docker файл)
+	
+	-t	-- назва image
+
+5432 --	Дефолтний внутрішній порт для Postgress
+
+localhost	--	тільки в МЕЖАХ 1 пк віртуальний сервер | у кожного контейнера свій localhost
+IP	--	адресах в межах локальної мережі
+
+Зовні можна доступитися наприклад за потром 8080:80 і Docker перенаправить на потрібний контейнер
+		в той же час контейнер не може вийти за межі і кинути запит на 8080
+
+
+network -- для того щоб ConsoleApp вийшов за межі контейнера 
+	і підключився до LocalHost на якому міститься БД
+
+контейер неможе кидати запити за межі Docker
+	можуть тільки в його межах
+	
+Порти створ за межами Docker і він перенаправляє на контейнер
+
+утвор network
+root@WorkPC:/home/dima/pd411_test_network# docker run -d --name db -p 5400:5432 -e POSTGRES_PASSWORD=qwerty -e POSTGRES
+USER=pd411 -e POSTGRES_DB=pd411db postgres
+
+
+# Створення мережі
+docker network create <network_name>
+
+docker network ls	--Перегляд інформації про мережі
+
+#Перегляд контейнерів, підключених до мережі
+docker network inspect <network_name>
+
+# Підключення контейнера до мережі
+docker network connect <network_name> <container_name_or_id>
+
+# Відключення контейнера від мережі
+docker network disconnect <network_name> <container_name_or_id>
+
+# Вказати мережу при запуску контейнера
+docker run --name <container_name> --network <network_name> <image_name>
+
+											назва контейера щоб підключитись
+optionsBuilder.UseNpgsql("User ID=pd411;Password=qwerty; Host=db; Port=5432; Database=pd411db;");
+
+
+ Підключити контейнери тільки по внутрішнім портам (Port=5432 не 5000)
+
+docker run --network pd411_nt --rm pd411_network:latest
+
+
+1. 	docker network create my_nt	-- створ мережу
+					
+					  мережа	контейнер
+2.	docker network connect my_nt db		--підключ контейнер до мережі
+								 
+							мережа	 C# програма
+3.	docker run --rm --network my_nt pd411_network:latest --запуск і підключ контейер
+	
+	#існуючий контейнер	  #при створенні контейера
+docker network connect		--network
+	
+---------------------------------------------- 	
+04_	Volumes								
+	
+Коли Видаляється контейнер видаляється БД у ньому
+							і її файли
+	
+	
+Volumes	--	дозволить зберегти статичні файли при видаленні контейнера	
+	Сховище статичних файлів в Ubuntu до якого підключений контейнер
+	
+Через нього контейнери можуть обімнюватись данними	
+	
+network -- спілкування між контенейрами через запити
+volume	--	доступ до файлів із спільної папки	
+	
+# Створити volume
+docker volume create my_volume
+
+# Перегляд volumes
+docker volume 1s
+
+# Деталі конкретного volume
+docker volume inspect my_volume
+
+# Видалити Volume
+docker volume rm my_volume	
+
+				назва volume  звідки брати для Volume
+docker run -d -v db_volume:/app/storage 		-p 5400:5432 -name dbe	
+	
+/var/lib/postgresql -- шлях де зберігаються дані postgres
+						всі дані будуть зберігаться у Volume тут
+
+/var/lib/docker/volumes	--	стандратний шлях на Ubuntu до volume
+
+				запис у файл
+echo "Hello world" > my_file.txt
+
+docker run -it --name box -v db_volume:/home busybox
+ запускаємо box прив'язаний до Volume 
+	
+---------------------------------------------- 	
+05_	Build
+
+dotnet restore	--	скачує dependecy (npm i)
+dotnet .\ConsoleApp1.dll	--	запустити build (build робимо у папці з .csproj) і лише той проект який лише буде запускатися (.API)
+				
+dotnet publish	-o -out -- уже зібраний проект для Winodws .exe 	для Linux .dll			
+				
+				
+				 /або Debug
+dotnet publish -c Release -o out	-- збирає проект у формі Release (Debug)
+									в папці out
+
+Кожна програма має свій Docker файл 
+	COPY ["PD411_Books.API/PD411_Books.API.csproj", "PD411_Books.API/"]
+	COPY ["PD411_Books.BLL/PD411_Books.BLL.csproj", "PD411_Books.BLL/"]
+	COPY["PD411_Books.DAL/PD411_Books.DAL.csproj", "PD411_Books.DAL/"]
+
+Документація на контейнеризацію .NET проектів
+https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows&pivots=dotnet-10-0
+
+ 
+Для білда створ файл Dockerfile без розширення
+Dockerfile склад з 2 частин
+1 Збирає
+2 Запускає 
+	
+sdk	--	для компіляції
+runtime	--	для запуску
+
+/Dockerfile -- знаходиться у папці з .sln
+
+====
+	
+	FROM mcr.microsoft.com/dotnet/sdk: 10.0 AS build 	--підключ sdk
+	WORKDIR /app	-- створ робочу папку
+	
+	#COPY . ./	-- скопіювати все з папки проекту у /app
+	або
+	COPY ["calculator/calculator.csproj", "calculator/"] -- або тільки .csproj | у app/calculator перенос .csproj
+	
+	RUN dotnet restore	./calculator/calculator.csproj    --скачує Dependecy (аналог npm i)
+	COPY . ./											
+	
+	RUN dotnet publish -c Release o out -- компілюж і у Debug створ exe файл | build
+		
+	-----далі для запуску 	
+	FROM mcr.microsoft.com/dotnet/aspnet:10.0
+	WORKDIR /app							--створ 2 app у image | другий шар у 1 видаляється і залишється в результаті exe	
+	COPY --from=build /app/out .				--копіювати з out (готовий проект)	
+	ENTRYPOINT ["dotnet", "calculator.dll"]		--команда для запуску
+	
+====
+беремо .dockerignore і переносимо у папку з проектом
+ і весь проект переносимо на ubuntu
+
+ubuntu/home/dima/calculator
+
+ПЕРЕХОДИМО у папку з dockerfile і пропис | папка з проектом			
+ docker build -t DOCKER_IMAGE_NAME .	-- створ image . шукати dockerfile в цій папці
+									  -t назва Image при створенні
+
+#
+ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ WORKDIR /app
+  
+ COPY ["PD411_Books.API/PD411_Books.API.csproj", "PD411_Books.API/"]
+ COPY ["PD411_Books.BLL/PD411_Books.BLL.csproj", "PD411_Books.BLL/"]
+ COPY ["PD411_Books.DAL/PD411_Books.DAL.csproj", "PD411_Books.DAL/"]
+ 
+ RUN dotnet restore ./PD411_Books.API/PD411_Books.API.csproj
+  
+ COPY . ./
+ RUN dotnet publish -c Release -o out ./PD411_Books.API/PD411_Books.API.csproj
+  
+ FROM mcr.microsoft.com/dotnet/aspnet:9.0
+ WORKDIR /app
+ COPY --from=build /app/out .
+ ENTRYPOINT ["dotnet", "PD411_Books.API.dll"] 
+# 
+ 
+ у appsettings.json 
+													тільки 5432 - внутрішній порт (контейнери між собою працюють тільки по внутрішнім)
+DockerDb": "User ID-postgres; Password=qwerty; Host=db; Port=5432; Database=pd411_books;"
+
+
+apt install git		-- скачуємо git для клонування
+mkdir pd411_books	-- створ папку
+
+заходимо в неї і клонуємо репозиторій
+ cd pd411_book
+  git clone https://github.com/potapchukdmytro/PD411_ASP_React_Book
+
+
+cd back
+ docker build -t pd411_api . -- створ image з беком
+
+Для беку і фронту створ окремі Image	
+
+
+docker run -d -p 5400:5432 -e POSTGRES_PASSWORD=qwerty -e POSTGRES_DB=pd411_books -v pd411_db:/var/lib/postgresql --name db --network pd411 postgres
+
+docker run -d -v pd411_api:/app/Storage --name api -p 5000:8080 --network pd411 pd411_api:latest
+
+cd /var/lib/docker
+docker volume ls
+cd volumes/
+
+зоб постійно не білдити запушимо на docker hub
+ docker tag pd411_api:latest potapchuk22/pd411_api:latest
+
+docker login -u potapchuk22
+docker push potapchuk22/pd411_api: latest
+
+---------------------------------------------- 	
+06_Environment
+
+npm run build	--	збілдити проект у React
+
+npm install	--global serve	--встановлює serve для всієї системи 
+або через nginx
+
+#
+	FROM node: 24-alpine AS build
+	WORKDIR /app
+	COPY package*.json ./	--package lock + звичайний
+	RUN npm ci
+	COPY . .
+	RUN npm run build
+	
+	FROM nginx:alpine
+	COPY --from=build /app/dist /usr/share/nginx/html -- захостить файл який буде в папці
+	CMD ["nginx", "-g", "daemon off;"]
+	
+#
+
+З сервера скачується сайт через (кидається запит) це Front
+	обмін запитами по зовнішньому порту
+
+	задаємо змінну через -e
+string? apiUrl = Environment.GetEnvironmentVariable("API_URL");
+
+docker run -e API_URL=""	--rm -it currency
+
+
+У aspnet ожна повністю переписати appsettings при запуску з docker
+ і можна зразу написати
+
+	SectionName__VarName=""
+
+ConnectionStrings__LocalDb=""
+
+Для C# python
+ docker run -d -v pd411_api:/app/Storage -e ConnectionStrings__LocalDb="User ID=postgres;Password=qwerty;Host=db;Port=5432;Database=pd411_books;" -p 5000:8080 --network pd411 --name api pd411_api:latest
+
+ 
+Потім можна зробити script який буде виконувати цю команду автоматично
+ У React треба змінювати Env на етапі build
+
+Якщо змінна є то docker перепиши ні то не створить
+
+						 //створити -e EnableSwagger
+string? enableSwagger = builder.Configuration["EnableSwagger"];
+if (enableSwagger != null && enableSwagger == "true")
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
+---------------------------------------------- 	
+07_Compose
+
+apt update	--	перевірити на наявність оновлень
+apt upgrade	--	обновити компоненти
+
+
+docker compose	--	запустити декілька контейнерів 1 командою
+						(на сервер ubuntu або віртуальну машину)
+
+docker compose up	--	docker run 
+docker compose down	--	docker rm -f
+
+docker compose start	--	docker start (продовжити роботу контейнера)
+				stop	--	docker stop (зупинити роботу контейнера)
+				ps
+				logs
+
+
+services:			-- структура (необов'язковий порядок)
+	service_name:
+		build:
+		image:
+		ports:
+		volumes:
+		environment:
+		depends_on:
+		networks:
+		command:
+
+
+#створитит compose (обов'язково при створенні табуляція)
+	nano compose.yaml
+
+GNU nano 7.2
+==	
+services:
+	db:
+		Image: postgres
+		container_name: "db"
+		ports:
+			-	5400:5432
+		environment:
+			-	"POSTGRES_PASSWORD=qwerty"
+			-	"POSTGRES_DB=pd411_shop"
+#АПІ Запустилась перед БД=помилка тому додаємо healthcheck		
+		healthcheck:
+			test: ["CMD-SHELL", "pg_isready -U postgres"]
+			interval: 10s
+			timeout: 5s
+			retries: 5	
+		volumes:
+			-	"shop_db:/var/Lib/postgresql"
+		networks:
+			-	"shop_nt"			
+	
+	api:
+		Image: shop_api
+		container_name: "shop_api"
+		ports:
+			-	"5000:8080"
+		environment:
+#Host=назва сервіса
+			- "ConnectionStrings__LocalDb=User ID=postgres;Password=qwerty;Host=db;Port=5432;Database=pd111_shop;"
+		volumes:
+			-	"shop_api:/app/Storage"
+		networks:
+			-	"pd411_nt"				
+		depends_on:       допомагає щоб БД запустилась раніше
+			db:
+			  condition: service_healthy  -- стала яка прив'язяує до healtchcheck
+	
+	
+	
+ #так як network volume немає їх створюємо	
+networks:
+	shop_nt:
+		name: "pd411_nt"	--	вказуємо саме таку назву
+volumes:
+	shop_db:			--так буде рандомна назва volume
+==
+
+ створили compose у папці де back front
+і у тій папці: docker compose up 
+
+
+для того щоб автоматично був білд
+ у пріоритеті запуск по готовому image
+
+	api:
+		build: "back/"	--	якщо немає image зайде в цю папку і зробить build
+	image:pd411 shop_api
+		container_name: "shop_api"
+		ports:
+			-	"5000:8080"
+		environment:
+			- ConnectionStrings__LocalDb=User ID=postgres;Password=qwerty;Host=db;Port=5432;Database=pd111_shop;
+		volumes:
+			-	"shop_api:/app/Storage"
+		networks:
+			-	"pd411_nt"				
+		depends_on:
+			db:
+			  condition: service_healthy 
+
+https://render.com/ -- бесплатний хостинг
+
+docker compose up --build -d --крім запуску додасть білд
+
+---------------------------------------------- 	
+08_ComposeFrontENV
+
+На React під час build всі файли перетовр на JS
+	тому зміниит -e під час image build
+
+
+ARG -- створ змінну у яку можна передати
+EVN -- редагуємо env файл
+
+ARG API_URL			-- і якщо не вказувати буде порожній рядок
+ENV VITE_API_URL=$API_URL
+
+docker build --build-arg API_URL=http://localhost:5000/api/ -t pd411_shop_web.
+
+mv	--	перекинути файл
+EXPOSE 3000	-- ставить внутрішній порт 3000
+
+web:
+	build:
+		context: front/
+		args:
+			API_URL: "http://localhost:7770/api/"
+			API_IMG: "http://localhost:7770/Image/"
+	image:
+	-	pd411_shop_web
+	container_name:
+	-	"shop web"
+	ports:
+	-	"80:3000"
+
+docker login	-- залогіниотись на dockerhub
+
+---------------------------------------------- 	
+
+
+
+
+
+
+

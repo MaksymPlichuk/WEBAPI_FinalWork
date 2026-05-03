@@ -14,6 +14,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import UploadImage from "../../components/uploadImage/UploadImage";
+import { env } from "../../env";
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: "flex",
@@ -97,7 +98,7 @@ const CarUpdateForm = () => {
         });
     }
 
-    const baseURL = import.meta.env.VITE_CARS_URL;
+    const baseURL = env.carsUrl;
     const navigate = useNavigate();
     const { id } = useParams();
 
