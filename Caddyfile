@@ -1,0 +1,7 @@
+nnweff.pp.ua {
+	reverse_proxy front:80
+}
+api.nnweff.pp.ua {
+	reverse_proxy api:8080
+}
+
